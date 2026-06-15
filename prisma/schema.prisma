@@ -11,3 +11,224 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+
+enum UserType {
+  DEVELOPER
+  FOUNDER
+  CYBERSECURITY_LEARNER
+  STUDENT
+  DESIGNER
+  CREATOR
+  OTHER
+}
+
+enum PrimaryGoal {
+  BUILD_IN_PUBLIC
+  GROW_LINKEDIN
+  STAY_CONSISTENT
+  CREATE_CONTENT_FASTER
+  DOCUMENT_JOURNEY
+  BUILD_PERSONAL_BRAND
+}
+
+enum Platform {
+  LINKEDIN
+  X
+  FACEBOOK
+}
+
+enum DraftStatus {
+  GENERATED
+  EDITED
+  ARCHIVED
+}
+
+enum ActivityType {
+  WORK_LOG_CREATED
+  QUICK_CAPTURE_CREATED
+  DRAFT_GENERATED
+  DRAFT_EDITED
+  DAILY_SUMMARY_GENERATED
+}
+
+enum NotificationType {
+  DAILY_REMINDER
+  STREAK_REMINDER
+  SYSTEM
+}
+
+model User {
+  id                    String   @id @default(cuid())
+
+  email                 String   @unique
+  passwordHash          String
+
+  firstName             String?
+  lastName              String?
+
+  avatarUrl             String?
+
+  emailVerified         Boolean  @default(false)
+  emailVerifiedAt       DateTime?
+
+  onboardingCompleted   Boolean  @default(false)
+
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  profile               UserProfile?
+
+  workLogs              WorkLog[]
+  quickCaptures         QuickCapture[]
+  generatedPosts        GeneratedPost[]
+
+  pushSubscriptions     PushSubscription[]
+  activities            UserActivity[]
+  notifications         NotificationHistory[]
+
+  @@index([email])
+}
+
+model UserProfile {
+  id                    String      @id @default(cuid())
+
+  userId                String      @unique
+  user                  User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  userType              UserType?
+  primaryGoal           PrimaryGoal?
+
+  reminderTime          String?
+  timezone              String?
+
+  notificationsEnabled  Boolean     @default(false)
+
+  currentStreak         Int         @default(0)
+  longestStreak         Int         @default(0)
+
+  createdAt             DateTime    @default(now())
+  updatedAt             DateTime    @updatedAt
+}
+
+model WorkLog {
+  id                    String   @id @default(cuid())
+
+  userId                String
+  user                  User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  title                 String?
+
+  content               String   @db.Text
+
+  wordCount             Int?
+
+  generated             Boolean  @default(false)
+
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  generatedPosts        GeneratedPost[]
+
+  @@index([userId])
+  @@index([createdAt])
+}
+
+model QuickCapture {
+  id                    String   @id @default(cuid())
+
+  userId                String
+  user                  User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  content               String   @db.Text
+
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  @@index([userId])
+  @@index([createdAt])
+}
+
+model GeneratedPost {
+  id                    String        @id @default(cuid())
+
+  userId                String
+  user                  User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  workLogId             String?
+  workLog               WorkLog?      @relation(fields: [workLogId], references: [id], onDelete: SetNull)
+
+  platform              Platform
+
+  content               String        @db.Text
+
+  status                DraftStatus   @default(GENERATED)
+
+  isFavorite            Boolean       @default(false)
+
+  contentDate            DateTime?
+
+  copiedCount           Int           @default(0)
+
+  openedPlatformCount   Int           @default(0)
+
+  createdAt             DateTime      @default(now())
+  updatedAt             DateTime      @updatedAt
+
+  @@index([userId])
+  @@index([platform])
+}
+
+model PushSubscription {
+  id                    String   @id @default(cuid())
+
+  userId                String
+  user                  User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  endpoint              String   @db.Text
+
+  p256dhKey             String   @db.Text
+  authKey               String   @db.Text
+
+  isActive              Boolean  @default(true)
+
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  @@index([userId])
+}
+
+model UserActivity {
+  id                    String        @id @default(cuid())
+
+  userId                String
+  user                  User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  type                  ActivityType
+
+  metadata              Json?
+
+  createdAt             DateTime      @default(now())
+
+  @@index([userId])
+  @@index([type])
+  @@index([createdAt])
+}
+
+model NotificationHistory {
+  id                    String            @id @default(cuid())
+
+  userId                String
+  user                  User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  type                  NotificationType
+
+  title                 String
+  body                  String
+
+  delivered             Boolean           @default(false)
+
+  createdAt             DateTime          @default(now())
+
+  @@index([userId])
+}
