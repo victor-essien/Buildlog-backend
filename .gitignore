@@ -169,3 +169,5 @@ credentials/
 /generated/prisma
 
 /src/generated/prisma
+
+/generated/prisma
