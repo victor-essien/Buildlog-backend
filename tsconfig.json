@@ -43,5 +43,8 @@
     "moduleDetection": "force",
     "skipLibCheck": true,
   },
- 
+  "include": [
+    "src/**/*",
+    "src/generated/prisma"
+  ]
 }
