@@ -5,7 +5,16 @@
      "rootDir": ".",
     "outDir": "./dist",
       "esModuleInterop": true,
-
+"baseUrl": ".",
+"paths": {
+      "@/*": ["src/*"],
+      "@config/*": ["src/config/*"],
+      "@middleware/*": ["src/middleware/*"],
+      "@modules/*": ["src/modules/*"],
+      "@services/*": ["src/services/*"],
+      "@types/*": ["src/types/*"],
+      "@utils/*": ["src/utils/*"]
+    },
 
     // Environment Settings
     // See also https://aka.ms/tsconfig/module
@@ -21,7 +30,7 @@
     "sourceMap": true,
     "declaration": true,
     "declarationMap": true,
-
+"ignoreDeprecations": "6.0",
     // Stricter Typechecking Options
     "noUncheckedIndexedAccess": true,
     // "exactOptionalPropertyTypes": true,
@@ -45,6 +54,5 @@
   },
   "include": [
     "src/**/*",
-    "src/generated/prisma"
   ]
 }
