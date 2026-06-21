@@ -47,10 +47,10 @@ export interface AuthSessionUser extends UserPublicRecord {
 }
 
 export interface AuthJwtPayload {
-  sub: string;
+  id: string;
   email: string;
-  emailVerified: boolean;
-  onboardingCompleted: boolean;
+   iat?: number;
+  exp?: number;
 }
 
 export interface AuthResponse {

@@ -11,15 +11,11 @@ import type {
 export interface UserRecord {
   id: string;
   email: string;
-  passwordHash: string;
   firstName: string | null;
   lastName: string | null;
   avatarUrl: string | null;
-  emailVerified: boolean;
-  emailVerifiedAt: Date | null;
   onboardingCompleted: boolean;
-  createdAt: Date;
-  updatedAt: Date;
+
 }
 
 export type UserPublicRecord = Omit<UserRecord, "passwordHash">;

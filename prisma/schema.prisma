@@ -63,7 +63,7 @@ model User {
 
   email                 String   @unique
   passwordHash          String
-
+//  TODO: ADD NAME FIELD ONLY remove firstname, lastname
   firstName             String?
   lastName              String?
 
