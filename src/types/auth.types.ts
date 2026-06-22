@@ -22,7 +22,14 @@ export interface AuthRefreshInput {
 export interface AuthPasswordResetRequestInput {
   email: string;
 }
+export type PasswordResetTokenPayload = AuthJwtPayload & {
+  purpose: "password_reset";
+};
 
+export type PasswordResetRequestResult = {
+  message: string;
+  resetToken?: string;
+};
 export interface AuthPasswordResetInput {
   token: string;
   password: string;

@@ -74,3 +74,4 @@ export const verifyGoogleToken = async (token: string) => {
     throw new Error('Invalid Google token');
   }
 }
+

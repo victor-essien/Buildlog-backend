@@ -3,50 +3,32 @@ import prisma from "@/config/db";
 import {
   AuthenticationError,
   ConflictError,
-  ValidationError,
   NotFoundError,
+  ValidationError,
 } from "@/middleware/error.middleware";
-import { logger, logAuth } from "@/utils/logger";
-import {
-  signAccessToken,
-  signRefreshToken,
-  verifyRefreshToken,
-} from "@/utils/jwt";
-import {
-  JWT_ACCESS_SECRET,
-  JWT_REFRESH_SECRET,
-  REFRESH_TOKEN_EXPIRES,
-  ACCESS_TOKEN_EXPIRES,
-} from "../../../env";
+import { logAuth, logger } from "@/utils/logger";
+import { signAccessToken, signRefreshToken, verifyPasswordResetToken } from "@/utils/jwt";
+import { ACCESS_TOKEN_EXPIRES, JWT_ACCESS_SECRET } from "../../../env";
 import {
   AuthRegistrationInput,
   AuthLoginInput,
-  AuthRefreshInput,
-  AuthPasswordResetRequestInput,
   AuthPasswordResetInput,
+  AuthPasswordResetRequestInput,
   AuthOnboardingInput,
-  AuthTokenPair,
-  AuthSessionUser,
   AuthJwtPayload,
   AuthResponse,
+  PasswordResetRequestResult,
+  PasswordResetTokenPayload,
 } from "@/types/auth.types";
-import {
-  comparePassword,
-  compareToken,
-  hashPassword,
-  hashToken,
-} from "@/utils/hash";
-import {
-  setRefreshCookie,
-  clearRefreshCookie,
-  verifyGoogleToken,
-} from "@/utils/helpers";
+import { comparePassword, hashPassword } from "@/utils/hash";
+import { verifyGoogleToken } from "@/utils/helpers";
+
 
 export class AuthService {
   private readonly JWT_ACCESS_SECRET = JWT_ACCESS_SECRET;
-  private readonly JWT_REFRESH_SECRET = JWT_REFRESH_SECRET;
   private readonly ACCESS_TOKEN_EXPIRES = ACCESS_TOKEN_EXPIRES;
-  private readonly REFRESH_TOKEN_EXPIRES = REFRESH_TOKEN_EXPIRES;
+  private readonly PASSWORD_RESET_TOKEN_EXPIRES = "15m";
+  private verifyPasswordResetToken = verifyPasswordResetToken;
 
   // Register new user
   async signup(data: AuthRegistrationInput): Promise<AuthResponse> {
@@ -239,4 +221,180 @@ export class AuthService {
     });
     logger.info(`User onboarding completed: ${userId}`);
   }
+
+  async requestPasswordReset(
+    data: AuthPasswordResetRequestInput,
+  ): Promise<PasswordResetRequestResult> {
+    const { email } = data;
+
+    if (!email) {
+      throw new ValidationError("Email is required");
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { email },
+      select: {
+        id: true,
+        email: true,
+      },
+    });
+
+    if (!user) {
+      logger.info(`Password reset requested for unknown email: ${email}`);
+      return {
+        message:
+          "If an account exists for that email, a password reset link has been generated.",
+      };
+    }
+
+    const resetToken = this.signPasswordResetToken({
+      id: user.id,
+      email: user.email,
+    });
+
+    logAuth("password_reset", user.id, {
+      email: user.email,
+      action: "requested",
+    });
+
+    return {
+      message:
+        "If an account exists for that email, a password reset link has been generated.",
+      resetToken,
+    };
+  }
+
+  async resetPassword(
+    data: AuthPasswordResetInput,
+  ): Promise<{ message: string }> {
+    const { token, password, confirmPassword } = data;
+
+    if (!token) {
+      throw new ValidationError("Password reset token is required");
+    }
+
+    if (!password || !confirmPassword) {
+      throw new ValidationError("Password and confirm password are required");
+    }
+
+    if (password !== confirmPassword) {
+      throw new ValidationError("Passwords do not match");
+    }
+
+    const payload = this.verifyPasswordResetToken(token);
+
+    const user = await prisma.user.findUnique({
+      where: { id: payload.id },
+      select: {
+        id: true,
+        email: true,
+      },
+    });
+
+    if (!user) {
+      throw new NotFoundError("User");
+    }
+
+    const passwordHash = await hashPassword(password);
+
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        passwordHash,
+      },
+    });
+
+    logAuth("password_reset", user.id, {
+      email: user.email,
+      action: "completed",
+    });
+
+    logger.info(`Password reset completed for user: ${user.id}`);
+
+    return {
+      message: "Password reset successfully",
+    };
+  }
+
+  async changePassword(
+    userId: string,
+    currentPassword: string,
+    newPassword: string,
+    confirmPassword: string,
+  ): Promise<void> {
+    if (!userId) {
+      throw new ValidationError("User ID is required");
+    }
+
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      throw new ValidationError(
+        "Current password and new password are required",
+      );
+    }
+
+    if (newPassword !== confirmPassword) {
+      throw new ValidationError("New passwords do not match");
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        id: true,
+        email: true,
+        passwordHash: true,
+      },
+    });
+
+    if (!user) {
+      throw new NotFoundError("User");
+    }
+
+    if (!user.passwordHash) {
+      throw new AuthenticationError(
+        "Password login is not enabled for this account",
+      );
+    }
+
+    const isPasswordValid = await comparePassword(
+      currentPassword,
+      user.passwordHash,
+    );
+
+    if (!isPasswordValid) {
+      throw new AuthenticationError("Current password is incorrect");
+    }
+
+    const passwordHash = await hashPassword(newPassword);
+
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        passwordHash,
+      },
+    });
+
+    logAuth("password_reset", user.id, {
+      email: user.email,
+      action: "changed",
+    });
+
+    logger.info(`Password changed successfully for user: ${user.id}`);
+  }
+
+  private signPasswordResetToken(
+    payload: Pick<AuthJwtPayload, "id" | "email">,
+  ) {
+    return jwt.sign(
+      {
+        ...payload,
+        purpose: "password_reset" as const,
+      },
+      this.JWT_ACCESS_SECRET as jwt.Secret,
+      {
+        expiresIn: this.PASSWORD_RESET_TOKEN_EXPIRES,
+      },
+    );
+  }
+
+  
 }
