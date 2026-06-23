@@ -5,6 +5,7 @@ import helmet from "helmet";
 import morgan from "morgan";
 import { logger } from "./utils/logger";
 import { errorHandler } from "./middleware/error.middleware";
+import authRoutes from "@/modules/auth/auth.routes";
 
 dotenv.config();
 
@@ -22,7 +23,6 @@ app.use(
   }),
 );
 
-
 // Test route
 app.get("/", (req, res) => {
   res.send("Buildlog API running...");
@@ -35,6 +35,7 @@ app.get("/", (req, res) => {
   res.status(200).send("Buildlog API");
 });
 
+app.use("/api/auth", authRoutes);
 app.use(errorHandler);
 const PORT = process.env.PORT || 5000;
 

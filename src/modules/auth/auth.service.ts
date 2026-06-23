@@ -28,7 +28,7 @@ export class AuthService {
   private readonly JWT_ACCESS_SECRET = JWT_ACCESS_SECRET;
   private readonly ACCESS_TOKEN_EXPIRES = ACCESS_TOKEN_EXPIRES;
   private readonly PASSWORD_RESET_TOKEN_EXPIRES = "15m";
-  private verifyPasswordResetToken = verifyPasswordResetToken;
+  private verifyPasswordResetToken = verifyPasswordResetToken
 
   // Register new user
   async signup(data: AuthRegistrationInput): Promise<AuthResponse> {
