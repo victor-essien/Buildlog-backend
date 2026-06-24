@@ -3,59 +3,42 @@ import { asyncHandler } from "@/middleware/asyncHandler";
 import { AuthService } from "./auth.service";
 import { AuthenticatedRequest } from "@/types/auth.types";
 import { setRefreshCookie, clearRefreshCookie } from "@/utils/helpers";
-
+import { sendSuccess, sendError, sendCreated } from "@/utils/apiResponse";
 const authService = new AuthService();
 
 export const authController = {
   signup: asyncHandler(async (req: Request, res: Response) => {
     const result = await authService.signup(req.body);
     setRefreshCookie(res, result.tokens.refreshToken ?? "");
-    return res.status(201).json({ success: true, data: result });
+    return sendCreated(res, "User created successfully", result);
   }),
 
   login: asyncHandler(async (req: Request, res: Response) => {
     const result = await authService.login(req.body);
     setRefreshCookie(res, result.tokens.refreshToken ?? "");
-    return res.status(200).json({ success: true, data: result });
+    return sendSuccess(res, 200, "Login successful", result);
   }),
 
   googleAuth: asyncHandler(async (req: Request, res: Response) => {
     const result = await authService.googleAuth(req.body.token);
     setRefreshCookie(res, result.tokens.refreshToken ?? "");
-    return res.status(200).json({ success: true, data: result });
+    return sendSuccess(res, 200, "Google authentication successful", result);
   }),
-
-  completeOnboarding: asyncHandler(
-    async (req: AuthenticatedRequest, res: Response) => {
-      if (!req.user) {
-        return res
-          .status(401)
-          .json({ success: false, message: "Unauthorized" });
-      }
-
-      await authService.completeOnboarding(req.user.id, req.body);
-      return res
-        .status(200)
-        .json({ success: true, message: "Onboarding completed" });
-    },
-  ),
 
   requestPasswordReset: asyncHandler(async (req: Request, res: Response) => {
     const result = await authService.requestPasswordReset(req.body);
-    return res.status(200).json({ success: true, data: result });
+    return  sendSuccess(res, 200, "Password reset requested", result);
   }),
 
   resetPassword: asyncHandler(async (req: Request, res: Response) => {
     const result = await authService.resetPassword(req.body);
-    return res.status(200).json({ success: true, data: result });
+    return sendSuccess(res, 200, "Password reset successfully", result);
   }),
 
   changePassword: asyncHandler(
     async (req: AuthenticatedRequest, res: Response) => {
       if (!req.user) {
-        return res
-          .status(401)
-          .json({ success: false, message: "Unauthorized" });
+        return sendError(res, 401, "Unauthorized");
       }
 
       await authService.changePassword(
@@ -64,16 +47,12 @@ export const authController = {
         req.body.newPassword,
         req.body.confirmPassword,
       );
-      return res
-        .status(200)
-        .json({ success: true, message: "Password changed successfully" });
+      return sendSuccess(res, 200, "Password changed successfully");
     },
   ),
 
   logout: asyncHandler(async (_req: Request, res: Response) => {
     clearRefreshCookie(res);
-    return res
-      .status(200)
-      .json({ success: true, message: "Logged out successfully" });
+    return sendSuccess(res, 200, "Logged out successfully");
   }),
 };

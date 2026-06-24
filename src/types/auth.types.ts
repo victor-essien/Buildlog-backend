@@ -36,7 +36,7 @@ export interface AuthPasswordResetInput {
   confirmPassword: string;
 }
 
-export interface AuthOnboardingInput {
+export interface UserOnboardingInput {
   userType?: UserType;
   primaryGoal?: PrimaryGoal;
   reminderTime?: string;
@@ -59,6 +59,13 @@ export interface AuthJwtPayload {
    iat?: number;
   exp?: number;
 }
+
+export interface ReminderUpdateInput {
+  reminderTime?: string ;
+  timezone?: string ;
+  notificationsEnabled?: boolean;
+}
+
 
 export interface AuthResponse {
   user: AuthSessionUser;

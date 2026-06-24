@@ -23,12 +23,7 @@ router.post(
 router.post("/logout", authController.logout);
 
 // Protected routes should use authentication middleware when available
-router.post(
-  "/onboarding",
-  authValidator.onboarding,
-  protect,
-  authController.completeOnboarding,
-);
+
 router.post(
   "/change-password",
   authValidator.changePassword,

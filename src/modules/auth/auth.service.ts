@@ -7,14 +7,17 @@ import {
   ValidationError,
 } from "@/middleware/error.middleware";
 import { logAuth, logger } from "@/utils/logger";
-import { signAccessToken, signRefreshToken, verifyPasswordResetToken } from "@/utils/jwt";
+import {
+  signAccessToken,
+  signRefreshToken,
+  verifyPasswordResetToken,
+} from "@/utils/jwt";
 import { ACCESS_TOKEN_EXPIRES, JWT_ACCESS_SECRET } from "../../../env";
 import {
   AuthRegistrationInput,
   AuthLoginInput,
   AuthPasswordResetInput,
   AuthPasswordResetRequestInput,
-  AuthOnboardingInput,
   AuthJwtPayload,
   AuthResponse,
   PasswordResetRequestResult,
@@ -23,12 +26,11 @@ import {
 import { comparePassword, hashPassword } from "@/utils/hash";
 import { verifyGoogleToken } from "@/utils/helpers";
 
-
 export class AuthService {
   private readonly JWT_ACCESS_SECRET = JWT_ACCESS_SECRET;
   private readonly ACCESS_TOKEN_EXPIRES = ACCESS_TOKEN_EXPIRES;
   private readonly PASSWORD_RESET_TOKEN_EXPIRES = "15m";
-  private verifyPasswordResetToken = verifyPasswordResetToken
+  private verifyPasswordResetToken = verifyPasswordResetToken;
 
   // Register new user
   async signup(data: AuthRegistrationInput): Promise<AuthResponse> {
@@ -193,34 +195,7 @@ export class AuthService {
     };
   }
 
-  // Complete user Onboardidng
 
-  async completeOnboarding(
-    userId: string,
-    data: AuthOnboardingInput,
-  ): Promise<void> {
-    const {
-      userType,
-      primaryGoal,
-      reminderTime,
-      timezone,
-      notificationsEnabled,
-    } = data;
-
-    // Update user profile
-    await prisma.userProfile.update({
-      where: { userId },
-      data: {
-        userType,
-        primaryGoal,
-        reminderTime,
-        timezone,
-        notificationsEnabled,
-        onboardingCompleted: true,
-      },
-    });
-    logger.info(`User onboarding completed: ${userId}`);
-  }
 
   async requestPasswordReset(
     data: AuthPasswordResetRequestInput,
@@ -395,6 +370,4 @@ export class AuthService {
       },
     );
   }
-
-  
 }

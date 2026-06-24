@@ -6,6 +6,7 @@ import morgan from "morgan";
 import { logger } from "./utils/logger";
 import { errorHandler } from "./middleware/error.middleware";
 import authRoutes from "@/modules/auth/auth.routes";
+import userRoutes from "@/modules/user/user.routes";
 
 dotenv.config();
 
@@ -36,6 +37,7 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api/auth", authRoutes);
+app.use("/api/user", userRoutes);
 app.use(errorHandler);
 const PORT = process.env.PORT || 5000;
 
