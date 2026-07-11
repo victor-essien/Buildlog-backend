@@ -144,3 +144,8 @@ export interface UserActivityWithUser extends UserActivityRecord {
 export interface NotificationHistoryWithUser extends NotificationHistoryRecord {
   user?: UserSummary | null;
 }
+
+export interface WorkLogInput {
+  title?: string;
+  content: string;
+}
