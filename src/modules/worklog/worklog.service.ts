@@ -1,13 +1,12 @@
 import prisma from "@/config/db";
 import { NotFoundError, ValidationError } from "@/middleware/error.middleware";
-import { logger } from "@/utils/logger";
 import {
   WorkLogRecord,
   WorkLogWithGeneratedPosts,
   WorkLogInput,
 } from "@/types/models.types";
 
-export class WorklogService {
+export class WorkLogService {
   async getWorklogsByUserId(userId: string): Promise<WorkLogRecord[]> {
     if (!userId) {
       throw new ValidationError("User ID is required");
