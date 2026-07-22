@@ -27,6 +27,11 @@ import { comparePassword, hashPassword } from "@/utils/hash";
 import { verifyGoogleToken } from "@/utils/helpers";
 
 export class AuthService {
+  private readonly JWT_SECRET = JWT_ACCESS_SECRET
+  // Jwt sectret set as private
+
+  
+  private readonly ACCESS_SECRET = JWT_ACCESS_SECRET
   private readonly JWT_ACCESS_SECRET = JWT_ACCESS_SECRET;
   private readonly ACCESS_TOKEN_EXPIRES = ACCESS_TOKEN_EXPIRES;
   private readonly PASSWORD_RESET_TOKEN_EXPIRES = "15m";
