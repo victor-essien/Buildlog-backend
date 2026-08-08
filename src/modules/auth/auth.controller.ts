@@ -10,6 +10,7 @@ export const authController = {
   signup: asyncHandler(async (req: Request, res: Response) => {
     const result = await authService.signup(req.body);
     setRefreshCookie(res, result.tokens.refreshToken ?? "");
+    // TODO: DONT SEND REFRESH TOKEN 
     return sendCreated(res, "User created successfully", result);
   }),
 
