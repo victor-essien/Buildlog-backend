@@ -1,8 +1,8 @@
 import { Response } from "express";
-import { asyncHandler } from "@/middleware/asyncHandler";
+import { asyncHandler } from "../../middleware/asyncHandler";
 import { UserService } from "./user.service";
-import { AuthenticatedRequest } from "@/types/auth.types";
-import {sendSuccess, sendError, sendCreated} from "@/utils/apiResponse";
+import { AuthenticatedRequest } from "../../types/auth.types";
+import {sendSuccess, sendError, sendCreated} from "../../utils/apiResponse";
 const userService = new UserService();
 
 export const userController = {

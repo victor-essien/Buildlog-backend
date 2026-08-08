@@ -1,7 +1,7 @@
 import prisma from "@/config/db";
-import { NotFoundError, ValidationError } from "@/middleware/error.middleware";
-import { logger } from "@/utils/logger";
-import { UserOnboardingInput, ReminderUpdateInput } from "@/types/auth.types";
+import { NotFoundError, ValidationError } from "../../middleware/error.middleware";
+import { logger } from "../../utils/logger";
+import { UserOnboardingInput, ReminderUpdateInput } from "../../types/auth.types";
 
 
 export interface ProfileUpdateInput {

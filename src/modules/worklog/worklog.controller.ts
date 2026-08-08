@@ -1,8 +1,8 @@
 import { Request, Response, NextFunction } from "express";
-import { asyncHandler } from "@/middleware/asyncHandler";
+import { asyncHandler } from "../../middleware/asyncHandler";
 import { WorkLogService } from "./worklog.service";
-import { sendSuccess, sendCreated } from "@/utils/apiResponse";
-import { AuthenticatedRequest } from "@/types/auth.types";
+import { sendSuccess, sendCreated } from "../../utils/apiResponse";
+import { AuthenticatedRequest } from "../../types/auth.types";
 const workLogService = new WorkLogService();
 
 export const worklogController = {

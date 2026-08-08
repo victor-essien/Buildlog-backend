@@ -5,8 +5,8 @@ import helmet from "helmet";
 import morgan from "morgan";
 import { logger } from "./utils/logger";
 import { errorHandler } from "./middleware/error.middleware";
-import authRoutes from "@/modules/auth/auth.routes";
-import userRoutes from "@/modules/user/user.routes";
+import authRoutes from "./modules/auth/auth.routes";
+import userRoutes from "./modules/user/user.routes";
 
 dotenv.config();
 

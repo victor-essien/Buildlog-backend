@@ -1,10 +1,10 @@
 import prisma from "@/config/db";
-import { NotFoundError, ValidationError } from "@/middleware/error.middleware";
+import { NotFoundError, ValidationError } from "../../middleware/error.middleware";
 import {
   WorkLogRecord,
   WorkLogWithGeneratedPosts,
   WorkLogInput,
-} from "@/types/models.types";
+} from "../../types/models.types";
 
 export class WorkLogService {
   async getWorklogsByUserId(userId: string): Promise<WorkLogRecord[]> {

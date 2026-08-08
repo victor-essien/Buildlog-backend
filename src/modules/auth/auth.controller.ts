@@ -1,9 +1,9 @@
 import { Request, Response, NextFunction } from "express";
-import { asyncHandler } from "@/middleware/asyncHandler";
+import {asyncHandler} from "../../middleware/asyncHandler";
 import { AuthService } from "./auth.service";
-import { AuthenticatedRequest } from "@/types/auth.types";
-import { setRefreshCookie, clearRefreshCookie } from "@/utils/helpers";
-import { sendSuccess, sendError, sendCreated } from "@/utils/apiResponse";
+import { AuthenticatedRequest } from "../../types/auth.types";
+import { setRefreshCookie, clearRefreshCookie } from "../../utils/helpers";
+import { sendSuccess, sendError, sendCreated } from "../../utils/apiResponse";
 const authService = new AuthService();
 
 export const authController = {

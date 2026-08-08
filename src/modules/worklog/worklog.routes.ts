@@ -1,6 +1,6 @@
 import {Router} from "express";
 import {worklogController} from "./worklog.controller";
-import {protect} from "@/middleware/auth.middleware";
+import {protect} from "../../middleware/auth.middleware";
 // import {worklogValidator} from "./worklog.validator";
 
 const router = Router();

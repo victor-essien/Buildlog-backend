@@ -1,17 +1,17 @@
 import jwt from "jsonwebtoken";
-import prisma from "@/config/db";
+import prisma from "../../config/db";
 import {
   AuthenticationError,
   ConflictError,
   NotFoundError,
   ValidationError,
-} from "@/middleware/error.middleware";
-import { logAuth, logger } from "@/utils/logger";
+} from "../../middleware/error.middleware";
+import { logAuth, logger } from "../../utils/logger";
 import {
   signAccessToken,
   signRefreshToken,
   verifyPasswordResetToken,
-} from "@/utils/jwt";
+} from "../../utils/jwt";
 import { ACCESS_TOKEN_EXPIRES, JWT_ACCESS_SECRET } from "../../../env";
 import {
   AuthRegistrationInput,
@@ -23,8 +23,8 @@ import {
   PasswordResetRequestResult,
   PasswordResetTokenPayload,
 } from "@/types/auth.types";
-import { comparePassword, hashPassword } from "@/utils/hash";
-import { verifyGoogleToken } from "@/utils/helpers";
+import { comparePassword, hashPassword } from "../../utils/hash";
+import { verifyGoogleToken } from "../../utils/helpers";
 
 export class AuthService {
   private readonly JWT_SECRET = JWT_ACCESS_SECRET
