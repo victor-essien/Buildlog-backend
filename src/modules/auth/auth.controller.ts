@@ -10,14 +10,19 @@ export const authController = {
   signup: asyncHandler(async (req: Request, res: Response) => {
     const result = await authService.signup(req.body);
     setRefreshCookie(res, result.tokens.refreshToken ?? "");
-    // TODO: DONT SEND REFRESH TOKEN 
-    return sendCreated(res, "User created successfully", result);
+    return sendCreated(res, "User created successfully", {
+      user: result.user,
+      accessToken: result.tokens.accessToken,
+    });
   }),
 
   login: asyncHandler(async (req: Request, res: Response) => {
     const result = await authService.login(req.body);
     setRefreshCookie(res, result.tokens.refreshToken ?? "");
-    return sendSuccess(res, 200, "Login successful", result);
+    return sendSuccess(res, 200, "Login successful", {
+      user: result.user,
+      accessToken: result.tokens.accessToken,
+    });
   }),
 
   googleAuth: asyncHandler(async (req: Request, res: Response) => {

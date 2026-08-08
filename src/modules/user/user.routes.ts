@@ -8,9 +8,9 @@ const router = Router();
 router.get("/profile", protect, userController.getProfile);
 router.patch("/profile", protect, userController.updateProfile);
 router.post(
-  "onboarding",
-  userValidator.onboarding,
+  "/onboarding",
   protect,
+  userValidator.onboarding,
   userController.completeOnboarding,
 );
 router.patch("/profile/reminder", protect, userController.updateReminder);

@@ -15,7 +15,7 @@ const validateBody = (schema: ZodTypeAny) => {
 
 
 const onboardingSchema = z.object({
-  userType: z.string().optional(),
+  UserType: z.string().optional(),
   primaryGoal: z.string().optional(),
   reminderTime: z.string().optional(),
   timezone: z.string().optional(),

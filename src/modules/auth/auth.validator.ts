@@ -2,16 +2,16 @@ import { Request, Response, NextFunction } from "express";
 import { z, ZodTypeAny } from "zod";
 
 const signupSchema = z.object({
-  email: z.string().email(),
-  password: z.string().min(8),
+  email: z.email(),
+  password: z.string().min(6),
   firstName: z.string().optional(),
   lastName: z.string().optional(),
   avatarUrl: z.string().url().optional(),
 });
 
 const loginSchema = z.object({
-  email: z.string().email(),
-  password: z.string().min(8),
+  email: z.email(),
+  password: z.string().min(6),
 });
 
 const googleAuthSchema = z.object({

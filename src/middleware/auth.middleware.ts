@@ -1,12 +1,12 @@
 import { Request, Response, NextFunction } from "express";
-import { verifyAccessToken, verifyRefreshToken } from "@/utils/jwt";
-import { asyncHandler } from "@/middleware/asyncHandler";
+import { verifyAccessToken, verifyRefreshToken } from "../utils/jwt";
+import { asyncHandler } from "./asyncHandler";
 import {
   RateLimitError,
   AuthenticationError,
   AuthorizationError,
 } from "./error.middleware";
-import prisma from "@/config/db"
+import prisma from "../config/db"
 // import {AuthRequest} from "@/types/auth.types";
 
 export const protect = (req: Request, res: Response, next: NextFunction) => {
